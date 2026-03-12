@@ -256,14 +256,35 @@ button:hover {
 /* Tables */
 .table-container {
     overflow-x: auto;
+    overflow-y: auto;
+    max-height: 450px;
     border-radius: 20px;
     border: 1px solid var(--border);
     background: var(--bg-card);
 }
 
+.table-container::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+}
+
 table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
 }
 
 th {
@@ -413,13 +434,52 @@ td {
 }
 
 @media print {
-    .sidebar, button, header, .stats-grid, .glass-card:not(.invoice-wrapper), #reading-form, #shop-registration, #shop-registry {
+    /* Hide navigation, buttons, and other UI elements */
+    .sidebar, .nav-menu, header, button, .stats-grid, #reading-form, #lookup-info, #shop-registration, #shop-registry, #current-date {
         display: none !important;
     }
-    .main-content { margin-left: 0 !important; padding: 0 !important; }
-    body { background: #fff !important; }
-    .invoice-box { box-shadow: none !important; padding: 0 !important; max-width: 100% !important; }
-    .invoice-wrapper { border: none !important; background: none !important; }
+
+    /* Reset main content layout for printing */
+    .main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        background: white !important;
+    }
+
+    /* Force the active section and invoice container to show */
+    .section, #meter-reading, #bill-result, #bill-result .glass-card {
+        display: block !important;
+        visibility: visible !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+    }
+
+    /* Style the invoice for the page */
+    .invoice-box {
+        box-shadow: none !important;
+        border: 1px solid #718096 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        min-height: 100vh;
+        padding: 2cm !important; /* Standard print padding */
+    }
+
+    body {
+        background: white !important;
+    }
+
+    /* Ensure chart bars show color in print */
+    .history-bar {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    .total-bar {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
 }
 
 /* Responsive fixes */
