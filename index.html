@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Sidebar / Bottom Nav for Mobile -->
     <nav class="sidebar">
         <div class="logo">
             <div class="logo-icon"><i class="fas fa-bolt"></i></div>
@@ -19,7 +18,10 @@
                 <i class="fas fa-grid-2"></i> <span>Dashboard</span>
             </li>
             <li class="nav-item" id="nav-setup" onclick="showSection('shop-registration')">
-                <i class="fas fa-cog"></i> <span>Shop Setup</span>
+                <i class="fas fa-plus-circle"></i> <span>Add Shop</span>
+            </li>
+            <li class="nav-item" id="nav-registry" onclick="showSection('shop-registry')">
+                <i class="fas fa-store"></i> <span>Registry</span>
             </li>
             <li class="nav-item" id="nav-reading" onclick="showSection('meter-reading')">
                 <i class="fas fa-gauge-high"></i> <span>Entry</span>
@@ -30,7 +32,6 @@
         </ul>
     </nav>
 
-    <!-- Main Content Area -->
     <main class="main-content">
         <header>
             <h1 id="page-title">Dashboard</h1>
@@ -41,34 +42,38 @@
         <div id="dashboard" class="section active">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <h3>Active Supermarket</h3>
-                    <div class="value" id="stat-shop-name">Initializing...</div>
+                    <h3>Total Shops</h3>
+                    <div class="value" id="stat-total-shops">0</div>
                     <i class="fas fa-store" style="position: absolute; right: 20px; bottom: 20px; opacity: 0.1; font-size: 3rem;"></i>
                 </div>
                 <div class="stat-card">
-                    <h3>Current Reading</h3>
-                    <div class="value" id="stat-meter-reading">0 kWh</div>
+                    <h3>System Load</h3>
+                    <div class="value" id="stat-total-units">0 kWh</div>
                     <i class="fas fa-bolt-lightning" style="position: absolute; right: 20px; bottom: 20px; opacity: 0.1; font-size: 3rem;"></i>
                 </div>
                 <div class="stat-card" style="background: var(--gradient);">
-                    <h3 style="color: rgba(255,255,255,0.7);">Last Bill</h3>
-                    <div class="value" id="stat-last-bill">₹0.00</div>
+                    <h3 style="color: rgba(255,255,255,0.7);">Total Revenue</h3>
+                    <div class="value" id="stat-total-revenue">₹0.00</div>
                     <i class="fas fa-receipt" style="position: absolute; right: 20px; bottom: 20px; opacity: 0.1; font-size: 3rem;"></i>
                 </div>
             </div>
             
             <div class="glass-card" style="border-left: 6px solid var(--accent);">
-                <h3 style="margin-bottom: 0.5rem; color: var(--accent);">System Summary</h3>
-                <p id="summary-text" style="color: var(--text-dim); line-height: 1.6;">Setup your supermarket configuration to begin tracking monthly electricity usage efficiently.</p>
+                <h3 style="margin-bottom: 0.5rem; color: var(--accent);">System Snapshot</h3>
+                <p id="summary-text" style="color: var(--text-dim); line-height: 1.6;">Welcome back. Use the navigation to manage multiple shop electricity records.</p>
             </div>
         </div>
 
         <!-- Shop Registration Section -->
         <div id="shop-registration" class="section">
             <div class="glass-card">
-                <h2 style="margin-bottom: 2rem;">Supermarket Setup</h2>
+                <h2 style="margin-bottom: 2rem;">Register New Shop</h2>
                 <form id="shop-form">
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                        <div class="form-group">
+                            <label><i class="fas fa-hashtag"></i> Shop ID</label>
+                            <input type="text" id="s-id" placeholder="Unique ID (e.g. 101)" required>
+                        </div>
                         <div class="form-group">
                             <label><i class="fas fa-tag"></i> Shop Name</label>
                             <input type="text" id="s-name" placeholder="Supermarket Name" required>
@@ -95,39 +100,63 @@
                         <textarea id="s-address" rows="3" placeholder="Full location details"></textarea>
                     </div>
                     <button type="submit" style="width: 100%; margin-top: 1rem;">
-                        <i class="fas fa-save" style="margin-right: 8px;"></i> Save Setup
+                        <i class="fas fa-save" style="margin-right: 8px;"></i> Register Shop
                     </button>
                 </form>
             </div>
         </div>
 
+        <!-- Shop Registry Section -->
+        <div id="shop-registry" class="section">
+            <div class="glass-card">
+                <h2 style="margin-bottom: 2rem;">Registered Shops</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Shop Name</th>
+                                <th>Owner</th>
+                                <th>Meter No</th>
+                                <th>Current Rd</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="registry-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <!-- Meter Reading Section -->
         <div id="meter-reading" class="section">
-            <div class="glass-card" id="reading-setup-warning" style="display: none; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); margin-bottom: 2rem;">
-                <p style="color: #ef4444; display: flex; align-items: center; gap: 10px;">
-                    <i class="fas fa-triangle-exclamation"></i>
-                    Setup required. Please configure shop details first.
-                </p>
-            </div>
-            
             <div class="glass-card">
                 <h2 style="margin-bottom: 2rem;">Enter Monthly Reading</h2>
-                <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 18px; margin-bottom: 2rem; display: flex; gap: 2rem; border: 1px solid var(--border);">
-                    <div>
-                        <small style="color: var(--text-dim); display: block; margin-bottom: 4px;">Last Known Reading</small>
-                        <span style="font-size: 1.5rem; font-weight: 600;" id="display-prev-reading">--</span> <small>kWh</small>
-                    </div>
-                    <div>
-                        <small style="color: var(--text-dim); display: block; margin-bottom: 4px;">Shop Entity</small>
-                        <span style="font-size: 1.5rem; font-weight: 600;" id="display-shop-name-val">--</span>
-                    </div>
-                </div>
-
                 <form id="reading-form">
-                    <div class="form-group">
-                        <label>Current Meter Reading (kWh)</label>
-                        <input type="number" id="r-new" placeholder="Enter new meter value" required style="font-size: 1.5rem; text-align: center; padding: 1.5rem;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                        <div class="form-group">
+                            <label>Shop ID</label>
+                            <input type="text" id="r-id" placeholder="Enter Shop ID" required oninput="lookupShop()">
+                        </div>
+                        <div class="form-group">
+                            <label>Current Meter Reading (kWh)</label>
+                            <input type="number" id="r-new" placeholder="Enter new meter value" required>
+                        </div>
                     </div>
+
+                    <div id="lookup-info" style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 18px; margin-bottom: 2rem; border: 1px solid var(--border); display: none;">
+                        <div style="display: flex; gap: 2rem;">
+                            <div>
+                                <small style="color: var(--text-dim); display: block; margin-bottom: 4px;">Prev Reading</small>
+                                <span style="font-size: 1.5rem; font-weight: 600;" id="display-prev-reading">--</span> <small>kWh</small>
+                            </div>
+                            <div>
+                                <small style="color: var(--text-dim); display: block; margin-bottom: 4px;">Shop Entity</small>
+                                <span style="font-size: 1.5rem; font-weight: 600;" id="display-shop-name-val">--</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <button type="submit" style="width: 100%;">
                         <i class="fas fa-calculator" style="margin-right: 8px;"></i> Generate Bill
                     </button>
@@ -158,10 +187,10 @@
                         <thead>
                             <tr>
                                 <th>Date</th>
+                                <th>Shop ID</th>
                                 <th>Range (kWh)</th>
                                 <th>Units</th>
                                 <th>Total</th>
-                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody id="history-table-body"></tbody>
